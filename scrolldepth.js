@@ -34,17 +34,18 @@ function throttle(func, wait) {
 }
 
 function rounded(scrollDistance) {
-  return (Math.floor(scrollDistance/250) * 250).toString()
+  return (Math.floor(scrollDistance/settings.interval) * settings.interval).toString()
 }
 
-function sendEvent(category, action, label) {
+function sendEvent(category, action, label, delta) {
 
-  console.log(category, action, label)
+  console.log(category, action, label, delta)
 
   if (typeof gtag === 'function') {
     gtag('event', action, {
       'event_category': category,
       'event_label': label,
+      'value': delta,
       'non_interaction': true
     });
   }
@@ -64,16 +65,25 @@ function init(options) {
   window.addEventListener('scroll', throttle(function(e) {
 
     var depth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
-    console.log(depth, lastDepth)
+    var delta = depth - lastDepth
 
     if (depth > lastDepth) {
       lastDepth = depth;
-      sendEvent(settings.category, depth, pageId)
+      sendEvent(settings.category, settings.action, pageId, delta)
     }
 
 
   }, 250), false);
 
+  window.addEventListener('beforeunload', function (e) {
+    var depth = parseInt(window.pageYOffset + windowHeight, 10)
+    var delta = depth - lastDepth
+
+    if (depth > lastDepth) {
+      lastDepth = depth;
+      sendEvent(settings.category, settings.action, pageId, delta)
+    }
+  });
 
 }
 
@@ -81,14 +91,10 @@ function init(options) {
 // Default settings
 var defaults = {
   callback: sendEvent,
-  category: 'Scroll Depth'
+  category: 'Scroll Depth',
+  action: 'Pixel Depth'
 };
 
 var settings;
-
-
-
-
-
 
 
