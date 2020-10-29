@@ -57,7 +57,6 @@ function init(options) {
 
   var pageHeight = document.documentElement.scrollHeight
   var windowHeight = window.innerHeight
-  var interval = 500
   var lastDepth = 0
 
   var pageId = new Date().getTime() + '.' + Math.random().toString(36).substring(8) + '.' + pageHeight
@@ -75,15 +74,20 @@ function init(options) {
 
   }, 250), false);
 
-  window.addEventListener('beforeunload', function (e) {
-    var depth = parseInt(window.pageYOffset + windowHeight, 10)
-    var delta = depth - lastDepth
+  document.addEventListener('visibilitychange', function (e) {
 
-    if (depth > lastDepth) {
-      lastDepth = depth;
-      sendEvent(settings.category, settings.action, pageId, delta)
+    if (document.visibilityState == 'hidden') {
+
+      var depth = parseInt(window.pageYOffset + windowHeight, 10)
+      var delta = depth - lastDepth
+      if (depth > lastDepth) {
+        lastDepth = depth;
+        sendEvent(settings.category, settings.action, pageId, delta)
+      }
+
     }
-  });
+
+  }, false);
 
 }
 
@@ -92,9 +96,19 @@ function init(options) {
 var defaults = {
   callback: sendEvent,
   category: 'Scroll Depth',
-  action: 'Pixel Depth'
+  action: 'Pixel Depth',
+  interval: 1000
 };
 
 var settings;
+
+
+// Page visibility event
+// Measure as number of screenfuls?
+// Measure scroll bounces
+// Scroll position and time spent, what position spent most time
+//const terminationEvent = 'onpagehide' in self ? 'pagehide' : 'unload';
+
+
 
 
