@@ -58,17 +58,56 @@ function init(options) {
   var pageHeight = document.documentElement.scrollHeight
   var windowHeight = window.innerHeight
   var lastDepth = 0
+  var milestonesList = []
+  var offset = 0;
 
   var pageId = new Date().getTime() + '.' + Math.random().toString(36).substring(8) + '.' + pageHeight
 
+  if (settings.milestones) {
+
+    if (settings.milestones.hasOwnProperty('offset')) {
+      offset = settings.milestones.offset
+    }
+
+    var milestones = document.querySelectorAll('.scroll-milestone');
+    milestones.forEach((elem) => {
+      var distanceFromTop= elem.getBoundingClientRect().top + window.pageYOffset
+      milestonesList.push(distanceFromTop)
+    });
+
+  }
+
   window.addEventListener('scroll', throttle(function(e) {
 
-    var depth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
-    var delta = depth - lastDepth
+    var depth = window.pageYOffset + windowHeight
+    var roundedDepth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
+    var delta = roundedDepth - lastDepth
+    var passedMilestones = [];
 
-    if (depth > lastDepth) {
-      lastDepth = depth;
-      sendEvent(settings.category, settings.action, pageId, delta)
+    console.log(depth)
+
+    if (roundedDepth > lastDepth) {
+      lastDepth = roundedDepth;
+      sendEvent(settings.category, 'Pixel Depth', pageId, delta)
+    }
+
+    if (settings.milestones) {
+
+      if (milestonesList.length == 0) {
+        return
+      }
+
+      milestonesList.forEach((point) => {
+        if (depth > point + offset) {
+          passedMilestones.push(point)
+          milestonesList = milestonesList.filter(item => item !== point)
+        }
+      })
+
+      if (passedMilestones.length) {
+        sendEvent(settings.category, 'Milestones', pageId, passedMilestones.length)
+      }
+
     }
 
 
@@ -78,11 +117,11 @@ function init(options) {
 
     if (document.visibilityState == 'hidden') {
 
-      var depth = parseInt(window.pageYOffset + windowHeight, 10)
+      var depth = window.pageYOffset + windowHeight
       var delta = depth - lastDepth
       if (depth > lastDepth) {
-        lastDepth = depth;
-        sendEvent(settings.category, settings.action, pageId, delta)
+        lastDepth = depth; // add buffer here?
+        sendEvent(settings.category, 'Pixel Depth', pageId, delta)
       }
 
     }
@@ -96,8 +135,8 @@ function init(options) {
 var defaults = {
   callback: sendEvent,
   category: 'Scroll Depth',
-  action: 'Pixel Depth',
-  interval: 1000
+  interval: 1000,
+  milestones: undefined,
 };
 
 var settings;

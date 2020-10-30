@@ -11,16 +11,28 @@
 
     gtag('config', 'UA-74938125-1');
   </script>
-
-  <script src="scrolldepth.js"></script>
   <style>
     body {
-      height: 4000px;
+      height: 6000px;
+      padding-top: 2000px;
     }
   </style>
 </head>
 <body>
 
+  <div class="scroll-milestone" style="height: 2000px; border: 5px solid green; width: 100%"></div>
+
+
+  <div class="scroll-milestone" style="height: 2000px; border: 5px solid blue; width: 100%"></div>
+
+  <script src="scrolldepth.js"></script>
+  <script>
+    init({
+      'milestones' : {
+        offset: 300
+      }
+    })
+  </script>
 
 </body>
 </html>
