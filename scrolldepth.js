@@ -82,6 +82,7 @@
 
     var lastDepth = 0
     var milestoneList = []
+    var milestoneZeroSent = false;
 
     if (settings.milestones) {
 
@@ -137,15 +138,25 @@
 
       if (document.visibilityState == 'hidden') {
 
-        if (settings.pixelDepth) {
-          var depth = window.pageYOffset + windowHeight
-          var delta = depth - lastDepth
+        var depth = window.pageYOffset + windowHeight
+        var delta = depth - lastDepth
 
-          if (depth > lastDepth) {
-            lastDepth = depth;
+        // 100px buffer to avoid sending event for insignificant scrolls
+        if (depth > lastDepth + 100) {
+          lastDepth = depth;
+
+          if (settings.pixelDepth) {
             settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
           }
+
+          if (settings.milestones && !milestoneZeroSent) {
+            // Only need to send this once
+            milestoneZeroSent = true
+            settings.sendEvent([settings.category, 'Milestones', pageId, 0])
+          }
+
         }
+
       }
 
     }, false);
@@ -155,7 +166,5 @@
   window.scrolldepth = {
      init: init
   };
-
-
 
 })( window, document );
