@@ -25,12 +25,14 @@
 
   <div class="scroll-milestone" style="height: 2000px; border: 5px solid blue; width: 100%"></div>
 
-  <script src="scrolldepth.js"></script>
+  <script src="../scrolldepth.js"></script>
   <script>
-    init({
-      'milestones' : {
-        offset: 300
-      }
+    scrolldepth.init({
+      milestones : {
+        offset: 100
+      },
+      // pixelDepth: false,
+      //zeroEvent: true
     })
   </script>
 
