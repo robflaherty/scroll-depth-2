@@ -8,12 +8,11 @@
 
   // Default settings
   var defaults = {
-    callback: sendEvent,
+    sendEvent: sendEvent,
     category: 'Scroll Depth',
     interval: 1000,
     milestones: undefined,
-    pixelDepth: true,
-    zeroEvent: false,
+    pixelDepth: true
   };
 
   var settings;
@@ -57,7 +56,8 @@
     return (Math.floor(scrollDistance/settings.interval) * settings.interval).toString()
   }
 
-  function sendEvent(category, action, label, delta) {
+  function sendEvent(data) {
+    [category, action, label, delta] = data
 
     console.log(category, action, label, delta)
 
@@ -77,35 +77,20 @@
 
     var pageHeight = document.documentElement.scrollHeight
     var windowHeight = window.innerHeight
-    var lastDepth = 0
-    var milestonesList = []
-    var offset = 0;
-    var didNotScroll = true;
+    var offset = settings.milestones.hasOwnProperty('offset') ? settings.milestones.offset : 0;
+    var pageId = new Date().getTime() + '.' + Math.floor(10000 + Math.random() * 90000) + '.' + pageHeight + '.' + windowHeight
 
-    var pageId = new Date().getTime() + '.' + Math.floor(100000 + Math.random() * 900000) + '.' + pageHeight
+    var lastDepth = 0
+    var milestoneList = []
 
     if (settings.milestones) {
-
-      if (settings.milestones.hasOwnProperty('offset')) {
-        offset = settings.milestones.offset
-      }
 
       var milestones = document.querySelectorAll('.scroll-milestone');
       milestones.forEach((elem) => {
         var distanceFromTop= elem.getBoundingClientRect().top + window.pageYOffset
-        milestonesList.push(distanceFromTop)
+        milestoneList.push(distanceFromTop)
       });
 
-    }
-
-    if (settings.zeroEvent) {
-      if (settings.milestones) {
-        sendEvent(settings.category, 'Milestones', pageId, 0)
-      }
-
-      if (settings.pixelDepth) {
-        sendEvent(settings.category, 'Pixel Depth', pageId, 0)
-      }
     }
 
     window.addEventListener('scroll', throttle(function(e) {
@@ -113,35 +98,34 @@
       var depth = window.pageYOffset + windowHeight
       var roundedDepth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
       var delta = roundedDepth - lastDepth
-      var passedMilestones = [];
-      didNotScroll = false;
+      var passedMilestones = []
 
       console.log(depth)
 
       if (settings.pixelDepth) {
 
         if (roundedDepth > lastDepth) {
-          lastDepth = roundedDepth;
-          sendEvent(settings.category, 'Pixel Depth', pageId, delta)
+          lastDepth = roundedDepth
+          settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
         }
 
       }
 
       if (settings.milestones) {
 
-        if (milestonesList.length == 0) {
+        if (milestoneList.length == 0) {
           return
         }
 
-        milestonesList.forEach((point) => {
+        milestoneList.forEach((point) => {
           if (depth > point + offset) {
             passedMilestones.push(point)
-            milestonesList = milestonesList.filter(item => item !== point)
+            milestoneList = milestoneList.filter(item => item !== point)
           }
         })
 
         if (passedMilestones.length) {
-          sendEvent(settings.category, 'Milestones', pageId, passedMilestones.length)
+          settings.sendEvent([settings.category, 'Milestones', pageId, passedMilestones.length])
         }
 
       }
@@ -154,13 +138,12 @@
       if (document.visibilityState == 'hidden') {
 
         if (settings.pixelDepth) {
-          //Add a buffer so it only fires event if there's a meaningful delta
-          var depth = (window.pageYOffset + windowHeight);
+          var depth = window.pageYOffset + windowHeight
           var delta = depth - lastDepth
-          console.log(depth, lastDepth)
+
           if (depth > lastDepth) {
             lastDepth = depth;
-            sendEvent(settings.category, 'Pixel Depth', pageId, delta)
+            settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
           }
         }
       }
