@@ -17,38 +17,26 @@
 
   var settings;
 
-  /*
-   * Throttle function borrowed from:
-   * Underscore.js 1.5.2
-   * http://underscorejs.org
-   * (c) 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-   * Underscore may be freely distributed under the MIT license.
-   */
+  function debounce(func, wait, immediate) {
+    var timeout;
 
-  function throttle(func, wait) {
-    var context, args, result;
-    var timeout = null;
-    var previous = 0;
-    var later = function() {
-      previous = new Date;
-      timeout = null;
-      result = func.apply(context, args);
-    };
     return function() {
-      var now = new Date;
-      if (!previous) previous = now;
-      var remaining = wait - (now - previous);
-      context = this;
-      args = arguments;
-      if (remaining <= 0) {
-        clearTimeout(timeout);
+      var context = this, args = arguments;
+
+      var later = function() {
         timeout = null;
-        previous = now;
-        result = func.apply(context, args);
-      } else if (!timeout) {
-        timeout = setTimeout(later, remaining);
+        if (!immediate) {
+          func.apply(context, args);
+        }
+      };
+      var callNow = immediate && !timeout;
+
+      clearTimeout(timeout);
+
+      timeout = setTimeout(later, wait);
+      if (callNow) {
+        func.apply(context, args);
       }
-      return result;
     };
   }
 
@@ -94,7 +82,7 @@
 
     }
 
-    window.addEventListener('scroll', throttle(function(e) {
+    window.addEventListener('scroll', debounce(function(e) {
 
       var depth = window.pageYOffset + windowHeight
       var roundedDepth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
@@ -132,7 +120,7 @@
       }
 
 
-    }, 250), false);
+    }, 1000), false);
 
     document.addEventListener('visibilitychange', function (e) {
 
