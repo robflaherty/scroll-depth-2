@@ -10,7 +10,6 @@
   var defaults = {
     sendEvent: sendEvent,
     category: 'Scroll Depth',
-    interval: 1000,
     milestones: undefined,
     pixelDepth: true
   };
@@ -38,10 +37,6 @@
         func.apply(context, args);
       }
     };
-  }
-
-  function rounded(scrollDistance) {
-    return (Math.floor(scrollDistance/settings.interval) * settings.interval).toString()
   }
 
   function sendEvent(data) {

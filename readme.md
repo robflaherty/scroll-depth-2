@@ -12,10 +12,10 @@ Example:
 `{timestamp}.{random number}.{document height}.{viewport height}`
 
 ## Pixel Depth
-The script records pixel depth, sending an event at intervals (default interval = 1000px). It also sends an event when `visibilityState` changes to `hidden` as a way of recording the deepest scroll point when the tab is closed.
+The script keeps track of the max scroll depth, in pixels, and sends an event when `visibilityState` changes to `hidden` as a way of recording the deepest scroll point when the tab is closed or the user switches tabs. If a user returns to the tab and continues scrolling, the event value is updated the next time `visibilityState` changes to `hidden` again.
 
 ## Milestones
-Optionally (pass `{ milestones: true }`) you can record events for specific elements in the DOM. Elements with class `scroll-milestone` will fire milestone events in the order they appear in the DOM. You can also pass an `offset` value to require the element to be scrolled into view a minimum amount before firing the event.
+Milestones are specified DOM elements that have been scrolled into view. They're reported as the total number of milestones scrolled into view. You can pass a list of selectors in the options or add the class `.scroll-milestone` to elements that should be treated as milestones. If doing the latter, you need to turn on milestone tracking by setting the `milestones` option to `true`.
 
 ## How to Use
 ```
@@ -24,6 +24,21 @@ Optionally (pass `{ milestones: true }`) you can record events for specific elem
   scrolldepth.init()
 </script>
 ```
+
+## Options
+```
+<script>
+  scrolldepth.init({
+    milestones : {
+      selectors: ['.first-milestone, .another-milestone'],
+      offset: 100
+    }
+  })
+</script>
+```
+
+
+## Notes
 
 - Requires gtag
 - Doesn't support IE11
