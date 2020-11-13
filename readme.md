@@ -30,7 +30,7 @@ Milestones are specified DOM elements that have been scrolled into view. They're
 <script>
   scrolldepth.init({
     milestones : {
-      selectors: ['.first-milestone, .another-milestone'],
+      selectors: ['.first-milestone', '.another-milestone'],
       offset: 100
     }
   })
