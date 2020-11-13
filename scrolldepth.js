@@ -72,7 +72,11 @@
 
     var lastDepth = 0
     var milestoneList = []
-    var milestoneZeroSent = false;
+    var passedMilestones = []
+
+    var lastMilestone = 0
+    var currentMilestone = 0
+    var zeroSent = false;
 
     if (settings.milestones) {
 
@@ -86,8 +90,6 @@
 
       });
 
-
-
     }
 
     window.addEventListener('scroll', debounce(function(e) {
@@ -99,34 +101,19 @@
 
       console.log(depth)
 
-      if (settings.pixelDepth) {
+      lastDepth = roundedDepth
 
-        if (roundedDepth > lastDepth) {
-          lastDepth = roundedDepth
-          settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
-        }
-
+      if (milestoneList.length == 0) {
+        return
       }
 
-      if (settings.milestones) {
-
-        if (milestoneList.length == 0) {
-          return
+      milestoneList.forEach((point) => {
+        if (depth > point + offset) {
+          passedMilestones.push(point)
+          currentMilestone += 1
+          milestoneList = milestoneList.filter(item => item !== point)
         }
-
-        milestoneList.forEach((point) => {
-          if (depth > point + offset) {
-            passedMilestones.push(point)
-            milestoneList = milestoneList.filter(item => item !== point)
-          }
-        })
-
-        if (passedMilestones.length) {
-          settings.sendEvent([settings.category, 'Milestones', pageId, passedMilestones.length])
-        }
-
-      }
-
+      })
 
     }, 1000), false);
 
@@ -145,11 +132,19 @@
             settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
           }
 
-          // if (settings.milestones && !milestoneZeroSent) {
-          //   // Only need to send this once
-          //   milestoneZeroSent = true
-          //   settings.sendEvent([settings.category, 'Milestones', pageId, 0])
-          // }
+          if (settings.milestones) {
+
+            if (currentMilestone > lastMilestone) {
+              settings.sendEvent([settings.category, 'Milestones', pageId, (currentMilestone - lastMilestone)])
+              lastMilestone = currentMilestone
+            }
+
+            if (currentMilestone == 0 && !zeroSent) {
+              settings.sendEvent([settings.category, 'Milestones', pageId, 0])
+              zeroSent = true;
+            }
+
+          }
 
         }
 
