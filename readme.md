@@ -1,5 +1,5 @@
 # Scroll Depth 2
-Beta version of a better way to measure scroll depth.
+Alpha version of a better way to measure scroll depth. Features and data structure are still in flux so I'd recommend only using in test environments.
 
 The script generates a unique ID for each pageview and sends the ID as the Event Label. Scroll depth is a pixel value recorded by incrementing the Event Value.
 
