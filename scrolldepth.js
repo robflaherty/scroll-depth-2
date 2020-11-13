@@ -66,6 +66,8 @@
     var pageHeight = document.documentElement.scrollHeight
     var windowHeight = window.innerHeight
     var offset = settings.milestones.hasOwnProperty('offset') ? settings.milestones.offset : 0;
+    var selectors = settings.milestones.hasOwnProperty('selectors') ? settings.milestones.selectors : ['.scroll-milestone'];
+
     var pageId = new Date().getTime() + '.' + Math.floor(10000 + Math.random() * 90000) + '.' + pageHeight + '.' + windowHeight
 
     var lastDepth = 0
@@ -74,11 +76,17 @@
 
     if (settings.milestones) {
 
-      var milestones = document.querySelectorAll('.scroll-milestone');
-      milestones.forEach((elem) => {
-        var distanceFromTop= elem.getBoundingClientRect().top + window.pageYOffset
-        milestoneList.push(distanceFromTop)
+      selectors.forEach((selector) => {
+
+        var milestones = document.querySelectorAll(selector);
+        milestones.forEach((elem) => {
+          var distanceFromTop= elem.getBoundingClientRect().top + window.pageYOffset
+          milestoneList.push(distanceFromTop)
+        });
+
       });
+
+
 
     }
 
@@ -137,11 +145,11 @@
             settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
           }
 
-          if (settings.milestones && !milestoneZeroSent) {
-            // Only need to send this once
-            milestoneZeroSent = true
-            settings.sendEvent([settings.category, 'Milestones', pageId, 0])
-          }
+          // if (settings.milestones && !milestoneZeroSent) {
+          //   // Only need to send this once
+          //   milestoneZeroSent = true
+          //   settings.sendEvent([settings.category, 'Milestones', pageId, 0])
+          // }
 
         }
 
