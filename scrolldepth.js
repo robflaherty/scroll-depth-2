@@ -71,11 +71,13 @@
     var pageId = new Date().getTime() + '.' + Math.floor(10000 + Math.random() * 90000) + '.' + pageHeight + '.' + windowHeight
 
     var lastDepth = 0
+    var lastReportedDepth = 0
+
     var milestoneList = []
     var passedMilestones = []
 
-    var lastMilestone = 0
-    var currentMilestone = 0
+    var lastReportedMilestone = 0
+
     var zeroSent = false;
 
     if (settings.milestones) {
@@ -92,16 +94,19 @@
 
     }
 
+    /*
+     * Record max depth on scroll
+     */
+
     window.addEventListener('scroll', debounce(function(e) {
 
       var depth = window.pageYOffset + windowHeight
-      var roundedDepth = parseInt(rounded(window.pageYOffset + windowHeight), 10)
-      var delta = roundedDepth - lastDepth
-      var passedMilestones = []
 
       console.log(depth)
 
-      lastDepth = roundedDepth
+      if (depth > lastDepth) {
+        lastDepth = depth
+      }
 
       if (milestoneList.length == 0) {
         return
@@ -110,36 +115,41 @@
       milestoneList.forEach((point) => {
         if (depth > point + offset) {
           passedMilestones.push(point)
-          currentMilestone += 1
           milestoneList = milestoneList.filter(item => item !== point)
         }
       })
 
-    }, 1000), false);
+    }, 500), false);
+
+    /*
+     * Send report when tab is no longer active
+     */
 
     document.addEventListener('visibilitychange', function (e) {
 
       if (document.visibilityState == 'hidden') {
 
         var depth = window.pageYOffset + windowHeight
-        var delta = depth - lastDepth
+        var delta = depth - lastReportedDepth
 
-        // 100px buffer to avoid sending event for insignificant scrolls
-        if (depth > lastDepth + 100) {
-          lastDepth = depth;
+        // Buffer to avoid sending event for insignificant scrolls
+        if (depth > lastReportedDepth + 50) {
+
+          lastReportedDepth = depth;
 
           if (settings.pixelDepth) {
             settings.sendEvent([settings.category, 'Pixel Depth', pageId, delta])
           }
 
           if (settings.milestones) {
+            var milestonesToReport = passedMilestones.length - lastReportedMilestone
 
-            if (currentMilestone > lastMilestone) {
-              settings.sendEvent([settings.category, 'Milestones', pageId, (currentMilestone - lastMilestone)])
-              lastMilestone = currentMilestone
+            if (milestonesToReport) {
+              settings.sendEvent([settings.category, 'Milestones', pageId, milestonesToReport])
+              lastReportedMilestone += milestonesToReport
             }
 
-            if (currentMilestone == 0 && !zeroSent) {
+            if (lastReportedMilestone == 0 && !zeroSent) {
               settings.sendEvent([settings.category, 'Milestones', pageId, 0])
               zeroSent = true;
             }
