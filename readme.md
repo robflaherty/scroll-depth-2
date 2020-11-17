@@ -1,6 +1,13 @@
 # Scroll Depth 2
-Alpha version of a better way to measure scroll depth. Features and data structure are still in flux so I'd recommend only using in test environments.
+Alpha version of a better way to measure scroll depth.
 
+Intended for people comfortable working with GA data outside of the web UI. 
+
+Features and data structure are still in flux so I'd recommend only using in test environments.
+
+Feedback welcome!
+
+## What it does
 The script generates a unique ID for each pageview and sends the ID as the Event Label. Scroll depth is a pixel value recorded by incrementing the Event Value.
 
 The pageview ID includes the document height, which can be used to calculate the percent of the page scrolled, and the viewport height, which can be used to calculate the number of screens scrolled.
@@ -17,7 +24,7 @@ The script keeps track of the max scroll depth, in pixels, and sends an event wh
 ## Milestones
 Milestones are specified DOM elements that have been scrolled into view. They're reported as the total number of milestones scrolled into view. You can pass a list of selectors in the options or add the class `.scroll-milestone` to elements that should be treated as milestones. If doing the latter, you need to turn on milestone tracking by setting the `milestones` option to `true`.
 
-## How to Use
+## How to use
 ```
 <script src="scrolldepth.js"></script>
 <script>
