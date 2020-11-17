@@ -18,6 +18,8 @@ Example:
 
 `{timestamp}.{random number}.{document height}.{viewport height}`
 
+![Google Analytics Web UI Screenshot](scroll-depth-ga-data.png)
+
 ## Pixel Depth
 The script keeps track of the max scroll depth, in pixels, and sends an event when `visibilityState` changes to `hidden` as a way of recording the deepest scroll point when the tab is closed or the user switches tabs. If a user returns to the tab and continues scrolling, the event value is updated the next time `visibilityState` changes to `hidden` again.
 
