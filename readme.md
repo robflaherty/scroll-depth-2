@@ -1,5 +1,5 @@
 # Scroll Depth 2
-Alpha version of a better way to measure scroll depth.
+Alpha version of a better way to measure scroll depth. This is the next version of the original [Scroll Depth](https://github.com/robflaherty/scroll-depth) library.
 
 Intended for people comfortable working with GA data outside of the web UI. 
 
