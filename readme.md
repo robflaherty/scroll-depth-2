@@ -1,7 +1,7 @@
 # Scroll Depth 2
 Alpha version of a better way to measure scroll depth.
 
-Intended for people comfortable working with GA data outside of the web UI. 
+Intended for people comfortable working with GA data outside of the web UI.
 
 Features and data structure are still in flux so I'd recommend only using in test environments.
 
@@ -47,6 +47,5 @@ Milestones are specified DOM elements that have been scrolled into view. They're
 
 ## Notes
 
-- Requires gtag
-- Doesn't support IE11
+- Doesn't support IE11 yet
 

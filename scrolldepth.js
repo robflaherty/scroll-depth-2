@@ -44,13 +44,41 @@
 
     console.log(category, action, label, delta)
 
-    if (typeof gtag === 'function') {
+    if (settings.mode === 'gtag' && typeof gtag === 'function') {
       gtag('event', action, {
         'event_category': category,
         'event_label': label,
         'value': delta,
         'non_interaction': true
       });
+
+      return
+    }
+
+    if (settings.mode === 'gtm' && typeof dataLayer !== 'undefined') {
+      dataLayer.push({
+        'event': 'GAEvent',
+        'event_category': category,
+        'event_action': action,
+        'event_label': label,
+        'event_value': delta,
+        'non_interaction': true
+      });
+
+      return
+    }
+
+    if (settings.mode === 'universal' && typeof ga === 'function') {
+      ga('send', {
+        'hitType': 'event',
+        'eventCategory': category,
+        'eventAction': action,
+        'eventLabel': label,
+        'eventValue': delta,
+        'nonInteraction': true
+      });
+
+      return
     }
 
   }
