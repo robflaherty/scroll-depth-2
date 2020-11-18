@@ -1,5 +1,5 @@
 # Scroll Depth 2
-Alpha version of a better way to measure scroll depth.
+Alpha version of a better way to measure scroll depth. This is the next version of the original [Scroll Depth](https://github.com/robflaherty/scroll-depth) library.
 
 Intended for people comfortable working with GA data outside of the web UI.
 
@@ -17,6 +17,8 @@ Example:
 `1604195775299.26174.8016.744`
 
 `{timestamp}.{random number}.{document height}.{viewport height}`
+
+![Google Analytics Web UI Screenshot](scroll-depth-ga-data.png)
 
 ## Pixel Depth
 The script keeps track of the max scroll depth, in pixels, and sends an event when `visibilityState` changes to `hidden` as a way of recording the deepest scroll point when the tab is closed or the user switches tabs. If a user returns to the tab and continues scrolling, the event value is updated the next time `visibilityState` changes to `hidden` again.
