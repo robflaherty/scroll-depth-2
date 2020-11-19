@@ -1,3 +1,6 @@
+# 🚨 Update
+Development has moved to the main [Scroll Depth repository](https://github.com/robflaherty/scroll-depth/tree/next).
+
 # Scroll Depth 2
 Alpha version of a better way to measure scroll depth. This is the next version of the original [Scroll Depth](https://github.com/robflaherty/scroll-depth) library.
 
